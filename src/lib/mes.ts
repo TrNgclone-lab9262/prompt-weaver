@@ -38,22 +38,27 @@ export function parseLegacyDate(value: string | null | undefined): Date | null {
   const raw = String(value).trim();
   if (!raw || raw.toLowerCase() === "null") return null;
   const bits = raw.split(/\s+/);
-  const datePart = bits[0].replace(/\./g, "/");
+  const datePart = (bits[0] ?? "").replace(/\./g, "/");
   const parts = datePart.includes("/") ? datePart.split("/") : datePart.split("-");
   if (parts.length !== 3) return null;
+  const p0 = parts[0] ?? "";
+  const p1 = parts[1] ?? "";
+  const p2 = parts[2] ?? "";
   let y: string, m: string, d: string;
-  if (parts[0].length === 4) {
-    [y, m, d] = parts;
+  if (p0.length === 4) {
+    y = p0;
+    m = p1;
+    d = p2;
   } else {
-    y = parts[2].length === 2 ? `20${parts[2]}` : parts[2];
-    const first = Number(parts[0]);
-    const second = Number(parts[1]);
+    y = p2.length === 2 ? `20${p2}` : p2;
+    const first = Number(p0);
+    const second = Number(p1);
     if (first > 12 && second <= 12) {
-      d = parts[0];
-      m = parts[1];
+      d = p0;
+      m = p1;
     } else {
-      m = parts[0];
-      d = parts[1];
+      m = p0;
+      d = p1;
     }
   }
   let hh = 0;

@@ -13,6 +13,6 @@ export async function logAudit(
     action,
     entity,
     entity_id: entityId ?? null,
-    detail: detail ?? null,
+    detail: detail ? JSON.parse(JSON.stringify(detail)) : null,
   });
 }
