@@ -21,6 +21,15 @@ export const Route = createFileRoute("/_authenticated/my-jobs")({
   component: MyJobs,
 });
 
+type JobPatch = {
+  status?: string;
+  actual_start?: string | null;
+  actual_end?: string | null;
+  good_qty?: number;
+  ng_qty?: number;
+  remark?: string | null;
+};
+
 function MyJobs() {
   const { userId, isManager } = useRole();
   const qc = useQueryClient();
