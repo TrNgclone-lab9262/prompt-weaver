@@ -46,11 +46,8 @@ function MyJobs() {
   });
 
   const update = useMutation({
-    mutationFn: async ({ id, patch, action }: { id: string; patch: Record<string, unknown>; action: string }) => {
-      const { error } = await supabase
-        .from("jobs")
-        .update(patch as Record<string, never>)
-        .eq("id", id);
+    mutationFn: async ({ id, patch, action }: { id: string; patch: JobPatch; action: string }) => {
+      const { error } = await supabase.from("jobs").update(patch).eq("id", id);
       if (error) throw error;
       await logAudit(action, "job", id, patch);
     },
