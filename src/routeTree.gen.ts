@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedShinkoRouteImport } from './routes/_authenticated/shinko'
 import { Route as AuthenticatedTimelineRouteImport } from './routes/_authenticated/timeline'
 
 const IndexRoute = IndexRouteImport.update({
@@ -34,6 +35,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedShinkoRoute = AuthenticatedShinkoRouteImport.update({
+  id: '/shinko',
+  path: '/shinko',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedTimelineRoute = AuthenticatedTimelineRouteImport.update({
   id: '/timeline',
   path: '/timeline',
@@ -44,12 +50,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/shinko': typeof AuthenticatedShinkoRoute
   '/timeline': typeof AuthenticatedTimelineRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/shinko': typeof AuthenticatedShinkoRoute
   '/timeline': typeof AuthenticatedTimelineRoute
 }
 export interface FileRoutesById {
@@ -58,19 +66,21 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/shinko': typeof AuthenticatedShinkoRoute
   '/_authenticated/timeline': typeof AuthenticatedTimelineRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/dashboard' | '/timeline'
+  fullPaths: '/' | '/auth' | '/dashboard' | '/shinko' | '/timeline'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/timeline'
+  to: '/' | '/auth' | '/dashboard' | '/shinko' | '/timeline'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/_authenticated/shinko'
     | '/_authenticated/timeline'
   fileRoutesById: FileRoutesById
 }
@@ -110,6 +120,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/shinko': {
+      id: '/_authenticated/shinko'
+      path: '/shinko'
+      fullPath: '/shinko'
+      preLoaderRoute: typeof AuthenticatedShinkoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/timeline': {
       id: '/_authenticated/timeline'
       path: '/timeline'
@@ -122,11 +139,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedShinkoRoute: typeof AuthenticatedShinkoRoute
   AuthenticatedTimelineRoute: typeof AuthenticatedTimelineRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedShinkoRoute: AuthenticatedShinkoRoute,
   AuthenticatedTimelineRoute: AuthenticatedTimelineRoute,
 }
 
