@@ -52,7 +52,7 @@ function Machines() {
         machine_id: id,
         status,
         note: note[id] ?? null,
-        created_by: userId,
+        created_by: userId ?? null,
       });
       if (logError) throw logError;
       await logAudit("MACHINE_STATUS", "machine", id, { status, note: note[id] });

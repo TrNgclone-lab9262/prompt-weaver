@@ -60,7 +60,7 @@ function MyJobs() {
 
   const claim = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("jobs").update({ operator_id: userId }).eq("id", id);
+      const { error } = await supabase.from("jobs").update({ operator_id: userId ?? null }).eq("id", id);
       if (error) throw error;
       await logAudit("CLAIM", "job", id);
     },

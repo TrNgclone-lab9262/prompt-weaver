@@ -129,7 +129,7 @@ function ImportPage() {
             actual_end: end?.toISOString() ?? null,
             status: end ? "COMPLETED" : "RUNNING",
           })
-          .eq("id", jobs[0].id);
+          .eq("id", job.id);
         if (error) throw error;
         ok++;
       }
