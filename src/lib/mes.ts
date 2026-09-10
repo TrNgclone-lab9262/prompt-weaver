@@ -83,7 +83,7 @@ export function parseCsv(text: string): Record<string, string>[] {
         .map((cell) => cell.replace(/^"(.*)"$/, "$1").trim()),
     );
   if (rows.length < 2) return [];
-  const headers = rows[0].map((h) => (h || "").replace(/^\uFEFF/, "").trim());
+  const headers = (rows[0] ?? []).map((h) => (h || "").replace(/^\uFEFF/, "").trim());
   return rows.slice(1).map((row) => {
     const obj: Record<string, string> = {};
     headers.forEach((h, i) => {

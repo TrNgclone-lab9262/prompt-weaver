@@ -111,15 +111,17 @@ function ImportPage() {
           .from("work_orders")
           .select("id")
           .or(`drawing_number.eq.${drawing},part_number.eq.${drawing}`);
-        if (!wos?.length) continue;
+        const wo = wos?.[0];
+        if (!wo) continue;
         const start = parseLegacyDate(row["thoi_diem_bat_dau"]);
         const end = parseLegacyDate(row["thoi_diem_hoan_thanh"]);
         const { data: jobs } = await supabase
           .from("jobs")
           .select("id")
-          .eq("work_order_id", wos[0].id)
+          .eq("work_order_id", wo.id)
           .limit(1);
-        if (!jobs?.length) continue;
+        const job = jobs?.[0];
+        if (!job) continue;
         const { error } = await supabase
           .from("jobs")
           .update({
