@@ -51,29 +51,32 @@ function ImportPage() {
   async function importPlan(file: File) {
     setBusy(true);
     try {
-      const rows = parseCsv(await file.text());
+      const rows = parseCsvNormalized(await file.text());
+      push(`plan.csv: nhận diện được các trường ${detectFields(rows).join(", ") || "(không rõ)"}.`);
       const cache = new Map<string, string>();
       let ok = 0;
       for (const [i, row] of rows.entries()) {
-        const part = row["Ma_Hang"];
+        const part = row["part_number"] || row["drawing_number"];
         if (!part) continue;
-        const machineId = await ensureMachine(row["Ten_May"] ?? "", cache);
-        const woNumber = row["WO"] || `${part}-${row["Ten_Cong_Doan"] || "OP"}-${i + 1}`;
-        const start = parseLegacyDate(row["Ngay_Bat_Dau"]);
-        const end = parseLegacyDate(row["Ngay_Ket_Thuc"]);
+        const machineId = await ensureMachine(row["machine"] ?? "", cache);
+        const woNumber = row["wo_number"] || `${part}-${row["operation"] || "OP"}-${i + 1}`;
+        const start = parseLegacyDate(row["plan_start"]);
+        const end = parseLegacyDate(row["plan_end"]);
         const { data: wo, error } = await supabase
           .from("work_orders")
           .upsert(
             {
               wo_number: woNumber,
               part_number: part,
-              part_name: row["Ten_Hang"] ?? null,
-              drawing_number: row["ma_ban_ve"] ?? null,
-              quantity: Number(row["Qty"]) || 0,
+              part_name: row["part_name"] || null,
+              drawing_number: row["drawing_number"] || null,
+              customer: row["customer"] || null,
+              due_date: parseLegacyDate(row["due_date"])?.toISOString().slice(0, 10) ?? null,
+              quantity: Number(row["quantity"]) || 0,
               machine_id: machineId,
-              operation: row["Ten_Cong_Doan"] ?? null,
-              status: row["Status"] || "PLANNED",
-              remark: row["Memo"] ?? null,
+              operation: row["operation"] || null,
+              status: row["status"] || "PLANNED",
+              remark: row["remark"] || null,
             },
             { onConflict: "wo_number" },
           )
