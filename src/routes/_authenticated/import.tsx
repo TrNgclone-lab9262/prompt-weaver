@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageTitle } from "@/components/AppShell";
 import { logAudit } from "@/lib/audit";
-import { parseCsv, parseLegacyDate } from "@/lib/mes";
+import { detectFields, parseCsvNormalized, parseLegacyDate } from "@/lib/mes";
 
 export const Route = createFileRoute("/_authenticated/import")({
   head: () => ({
