@@ -105,19 +105,20 @@ function ImportPage() {
   async function importActual(file: File) {
     setBusy(true);
     try {
-      const rows = parseCsv(await file.text());
+      const rows = parseCsvNormalized(await file.text());
+      push(`actual.csv: nhận diện được các trường ${detectFields(rows).join(", ") || "(không rõ)"}.`);
       let ok = 0;
       for (const row of rows) {
-        const drawing = row["ma_ban_ve"];
-        if (!drawing) continue;
+        const key = row["drawing_number"] || row["part_number"];
+        if (!key) continue;
         const { data: wos } = await supabase
           .from("work_orders")
           .select("id")
-          .or(`drawing_number.eq.${drawing},part_number.eq.${drawing}`);
+          .or(`drawing_number.eq.${key},part_number.eq.${key}`);
         const wo = wos?.[0];
         if (!wo) continue;
-        const start = parseLegacyDate(row["thoi_diem_bat_dau"]);
-        const end = parseLegacyDate(row["thoi_diem_hoan_thanh"]);
+        const start = parseLegacyDate(row["actual_start"]);
+        const end = parseLegacyDate(row["actual_end"]);
         const { data: jobs } = await supabase
           .from("jobs")
           .select("id")
@@ -130,6 +131,9 @@ function ImportPage() {
           .update({
             actual_start: start?.toISOString() ?? null,
             actual_end: end?.toISOString() ?? null,
+            good_qty: Number(row["good_qty"]) || 0,
+            ng_qty: Number(row["ng_qty"]) || 0,
+            remark: row["remark"] || null,
             status: end ? "COMPLETED" : "RUNNING",
           })
           .eq("id", job.id);
