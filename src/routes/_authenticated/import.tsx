@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageTitle } from "@/components/AppShell";
 import { logAudit } from "@/lib/audit";
-import { parseCsv, parseLegacyDate } from "@/lib/mes";
+import { detectFields, parseCsvNormalized, parseLegacyDate } from "@/lib/mes";
 
 export const Route = createFileRoute("/_authenticated/import")({
   head: () => ({
@@ -51,29 +51,32 @@ function ImportPage() {
   async function importPlan(file: File) {
     setBusy(true);
     try {
-      const rows = parseCsv(await file.text());
+      const rows = parseCsvNormalized(await file.text());
+      push(`plan.csv: nhận diện được các trường ${detectFields(rows).join(", ") || "(không rõ)"}.`);
       const cache = new Map<string, string>();
       let ok = 0;
       for (const [i, row] of rows.entries()) {
-        const part = row["Ma_Hang"];
+        const part = row["part_number"] || row["drawing_number"];
         if (!part) continue;
-        const machineId = await ensureMachine(row["Ten_May"] ?? "", cache);
-        const woNumber = row["WO"] || `${part}-${row["Ten_Cong_Doan"] || "OP"}-${i + 1}`;
-        const start = parseLegacyDate(row["Ngay_Bat_Dau"]);
-        const end = parseLegacyDate(row["Ngay_Ket_Thuc"]);
+        const machineId = await ensureMachine(row["machine"] ?? "", cache);
+        const woNumber = row["wo_number"] || `${part}-${row["operation"] || "OP"}-${i + 1}`;
+        const start = parseLegacyDate(row["plan_start"]);
+        const end = parseLegacyDate(row["plan_end"]);
         const { data: wo, error } = await supabase
           .from("work_orders")
           .upsert(
             {
               wo_number: woNumber,
               part_number: part,
-              part_name: row["Ten_Hang"] ?? null,
-              drawing_number: row["ma_ban_ve"] ?? null,
-              quantity: Number(row["Qty"]) || 0,
+              part_name: row["part_name"] || null,
+              drawing_number: row["drawing_number"] || null,
+              customer: row["customer"] || null,
+              due_date: parseLegacyDate(row["due_date"])?.toISOString().slice(0, 10) ?? null,
+              quantity: Number(row["quantity"]) || 0,
               machine_id: machineId,
-              operation: row["Ten_Cong_Doan"] ?? null,
-              status: row["Status"] || "PLANNED",
-              remark: row["Memo"] ?? null,
+              operation: row["operation"] || null,
+              status: row["status"] || "PLANNED",
+              remark: row["remark"] || null,
             },
             { onConflict: "wo_number" },
           )
@@ -102,19 +105,20 @@ function ImportPage() {
   async function importActual(file: File) {
     setBusy(true);
     try {
-      const rows = parseCsv(await file.text());
+      const rows = parseCsvNormalized(await file.text());
+      push(`actual.csv: nhận diện được các trường ${detectFields(rows).join(", ") || "(không rõ)"}.`);
       let ok = 0;
       for (const row of rows) {
-        const drawing = row["ma_ban_ve"];
-        if (!drawing) continue;
+        const key = row["drawing_number"] || row["part_number"];
+        if (!key) continue;
         const { data: wos } = await supabase
           .from("work_orders")
           .select("id")
-          .or(`drawing_number.eq.${drawing},part_number.eq.${drawing}`);
+          .or(`drawing_number.eq.${key},part_number.eq.${key}`);
         const wo = wos?.[0];
         if (!wo) continue;
-        const start = parseLegacyDate(row["thoi_diem_bat_dau"]);
-        const end = parseLegacyDate(row["thoi_diem_hoan_thanh"]);
+        const start = parseLegacyDate(row["actual_start"]);
+        const end = parseLegacyDate(row["actual_end"]);
         const { data: jobs } = await supabase
           .from("jobs")
           .select("id")
@@ -127,6 +131,9 @@ function ImportPage() {
           .update({
             actual_start: start?.toISOString() ?? null,
             actual_end: end?.toISOString() ?? null,
+            good_qty: Number(row["good_qty"]) || 0,
+            ng_qty: Number(row["ng_qty"]) || 0,
+            remark: row["remark"] || null,
             status: end ? "COMPLETED" : "RUNNING",
           })
           .eq("id", job.id);
@@ -147,8 +154,9 @@ function ImportPage() {
       <PageTitle title="IMPORT CSV" sub="Nạp dữ liệu từ hệ thống cũ (plan.csv / actual.csv)" />
       <div className="mes-card p-3 text-[11px]">
         <p className="mb-2">
-          <b>plan.csv</b> cần các cột: Ma_Hang, Ten_May, Ten_Cong_Doan, Ngay_Bat_Dau, Ngay_Ket_Thuc, Qty,
-          Status, Memo (hỗ trợ ngày kiểu 6/23/2026).
+          <b>plan.csv</b> — hệ thống tự nhận cột dù viết hoa/thường, có dấu hay không: mã hàng (Ma_Hang,
+          part_number), tên hàng, mã bản vẽ, máy (Ten_May, may_gia_cong), công đoạn, ngày bắt đầu / kết
+          thúc, số lượng, khách hàng, ngày giao, trạng thái, ghi chú (Memo). Hỗ trợ ngày kiểu 6/23/2026.
         </p>
         <input
           type="file"
@@ -157,8 +165,8 @@ function ImportPage() {
           onChange={(e) => e.target.files?.[0] && importPlan(e.target.files[0])}
         />
         <p className="mt-4 mb-2">
-          <b>actual.csv</b> cần các cột: ma_ban_ve, may_gia_cong, thoi_diem_bat_dau, thoi_diem_hoan_thanh,
-          trang_thai.
+          <b>actual.csv</b> — nhận cột mã bản vẽ (ma_ban_ve) hoặc mã hàng, máy gia công, thời điểm bắt đầu /
+          hoàn thành, số lượng đạt, số lượng NG, trạng thái, ghi chú.
         </p>
         <input
           type="file"
