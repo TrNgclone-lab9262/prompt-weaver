@@ -154,8 +154,9 @@ function ImportPage() {
       <PageTitle title="IMPORT CSV" sub="Nạp dữ liệu từ hệ thống cũ (plan.csv / actual.csv)" />
       <div className="mes-card p-3 text-[11px]">
         <p className="mb-2">
-          <b>plan.csv</b> cần các cột: Ma_Hang, Ten_May, Ten_Cong_Doan, Ngay_Bat_Dau, Ngay_Ket_Thuc, Qty,
-          Status, Memo (hỗ trợ ngày kiểu 6/23/2026).
+          <b>plan.csv</b> — hệ thống tự nhận cột dù viết hoa/thường, có dấu hay không: mã hàng (Ma_Hang,
+          part_number), tên hàng, mã bản vẽ, máy (Ten_May, may_gia_cong), công đoạn, ngày bắt đầu / kết
+          thúc, số lượng, khách hàng, ngày giao, trạng thái, ghi chú (Memo). Hỗ trợ ngày kiểu 6/23/2026.
         </p>
         <input
           type="file"
