@@ -165,8 +165,8 @@ function ImportPage() {
           onChange={(e) => e.target.files?.[0] && importPlan(e.target.files[0])}
         />
         <p className="mt-4 mb-2">
-          <b>actual.csv</b> cần các cột: ma_ban_ve, may_gia_cong, thoi_diem_bat_dau, thoi_diem_hoan_thanh,
-          trang_thai.
+          <b>actual.csv</b> — nhận cột mã bản vẽ (ma_ban_ve) hoặc mã hàng, máy gia công, thời điểm bắt đầu /
+          hoàn thành, số lượng đạt, số lượng NG, trạng thái, ghi chú.
         </p>
         <input
           type="file"
