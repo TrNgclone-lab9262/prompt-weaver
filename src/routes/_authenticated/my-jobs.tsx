@@ -46,7 +46,7 @@ function MyJobs() {
           .from("jobs")
           .select("*, work_orders(wo_number, part_number, part_name, quantity)")
           .order("plan_start"),
-        supabase.from("machines").select("id, code").order("sort_order"),
+        supabase.from("machines").select("id, code, name").order("sort_order"),
       ]);
       if (jobs.error) throw jobs.error;
       if (machines.error) throw machines.error;
@@ -111,7 +111,7 @@ function MyJobs() {
                 </div>
                 <div className="text-[10px] text-muted-foreground">
                   {wo?.wo_number} · {wo?.part_name} · SL {wo?.quantity} ·{" "}
-                  {data.machines.find((m) => m.id === j.machine_id)?.code ?? "chưa gán máy"}
+                  {j.machine_id ? machineLabel(data.machines.find((m) => m.id === j.machine_id)) : "chưa gán máy"}
                 </div>
                 <div className="text-[10px]">
                   Plan: {fmtTime(j.plan_start)} → {fmtTime(j.plan_end)} · Actual: {fmtTime(j.actual_start)} →{" "}

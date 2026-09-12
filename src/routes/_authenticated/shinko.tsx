@@ -42,7 +42,7 @@ function Shinko() {
 
   if (isLoading || !data) return <p className="text-xs">Đang tải 進行リスト…</p>;
 
-  const machineByCode = new Map(data.machines.map((m) => [m.id, m.code]));
+  const machineByCode = new Map(data.machines.map((m) => [m.id, machineLabel(m)]));
   const now = Date.now();
 
   if (jobView) {
