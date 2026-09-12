@@ -112,3 +112,11 @@ export function startOfDay(d: Date): Date {
   n.setHours(0, 0, 0, 0);
   return n;
 }
+
+export function machineLabel(
+  m: { code: string; name?: string | null } | null | undefined,
+): string {
+  if (!m) return "-";
+  const name = (m.name ?? "").trim();
+  return name && name !== m.code ? `${m.code} — ${name}` : m.code;
+}

@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageTitle } from "@/components/AppShell";
 import { useRole } from "@/hooks/useAuth";
 import { logAudit } from "@/lib/audit";
-import { MACHINE_STATUSES, machineStatusClass, fmtTime } from "@/lib/mes";
+import { MACHINE_STATUSES, machineStatusClass, machineLabel, fmtTime } from "@/lib/mes";
 
 export const Route = createFileRoute("/_authenticated/machines")({
   head: () => ({
@@ -22,9 +22,10 @@ export const Route = createFileRoute("/_authenticated/machines")({
 });
 
 function Machines() {
-  const { userId } = useRole();
+  const { userId, isManager } = useRole();
   const qc = useQueryClient();
   const [note, setNote] = useState<Record<string, string>>({});
+  const [edit, setEdit] = useState<Record<string, { name: string; workshop: string }>>({});
   const [error, setError] = useState<string | null>(null);
 
   const { data } = useQuery({
@@ -64,6 +65,27 @@ function Machines() {
     onError: (e: Error) => setError(e.message),
   });
 
+  const saveInfo = useMutation({
+    mutationFn: async ({ id, name, workshop }: { id: string; name: string; workshop: string }) => {
+      const { error } = await supabase
+        .from("machines")
+        .update({ name: name.trim(), workshop: workshop.trim() || "MC", updated_at: new Date().toISOString() })
+        .eq("id", id);
+      if (error) throw error;
+      await logAudit("MACHINE_EDIT", "machine", id, { name, workshop });
+    },
+    onSuccess: (_d, v) => {
+      setError(null);
+      setEdit((e) => {
+        const next = { ...e };
+        delete next[v.id];
+        return next;
+      });
+      qc.invalidateQueries({ queryKey: ["machines"] });
+    },
+    onError: (e: Error) => setError(e.message),
+  });
+
   if (!data) return <p className="text-xs">Đang tải…</p>;
 
   return (
@@ -79,9 +101,56 @@ function Machines() {
                 {m.status}
               </span>
             </div>
-            <div className="text-[10px] text-muted-foreground">
-              {m.name} · {m.workshop}
-            </div>
+            {isManager && edit[m.id] ? (
+              <div className="mt-1 flex flex-wrap items-center gap-1">
+                <input
+                  value={edit[m.id]!.name}
+                  onChange={(ev) =>
+                    setEdit({ ...edit, [m.id]: { ...edit[m.id]!, name: ev.target.value } })
+                  }
+                  placeholder="Tên máy"
+                  className="min-w-0 flex-1 rounded border border-input px-1 py-1 text-[11px]"
+                />
+                <input
+                  value={edit[m.id]!.workshop}
+                  onChange={(ev) =>
+                    setEdit({ ...edit, [m.id]: { ...edit[m.id]!, workshop: ev.target.value } })
+                  }
+                  placeholder="Xưởng"
+                  className="w-16 rounded border border-input px-1 py-1 text-[11px]"
+                />
+                <button
+                  onClick={() => saveInfo.mutate({ id: m.id, ...edit[m.id]! })}
+                  className="rounded bg-primary px-2 py-1 text-[10px] font-bold text-primary-foreground"
+                >
+                  LƯU
+                </button>
+                <button
+                  onClick={() =>
+                    setEdit((e) => {
+                      const next = { ...e };
+                      delete next[m.id];
+                      return next;
+                    })
+                  }
+                  className="rounded border border-input px-2 py-1 text-[10px] font-bold"
+                >
+                  HỦY
+                </button>
+              </div>
+            ) : (
+              <div className="text-[10px] text-muted-foreground">
+                {m.name} · {m.workshop}
+                {isManager && (
+                  <button
+                    onClick={() => setEdit({ ...edit, [m.id]: { name: m.name, workshop: m.workshop } })}
+                    className="ml-2 underline"
+                  >
+                    sửa tên
+                  </button>
+                )}
+              </div>
+            )}
             <input
               value={note[m.id] ?? ""}
               onChange={(e) => setNote({ ...note, [m.id]: e.target.value })}
@@ -118,7 +187,7 @@ function Machines() {
             {data.logs.map((l) => (
               <tr key={l.id}>
                 <td>{fmtTime(l.created_at)}</td>
-                <td>{data.machines.find((m) => m.id === l.machine_id)?.code}</td>
+                <td>{machineLabel(data.machines.find((m) => m.id === l.machine_id))}</td>
                 <td>{l.status}</td>
                 <td>{l.note}</td>
               </tr>

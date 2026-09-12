@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageTitle } from "@/components/AppShell";
 import { Timeline, TimelineLegend, type TimelineBar } from "@/components/Timeline";
-import { fmtDate, fmtTime, startOfDay } from "@/lib/mes";
+import { fmtDate, fmtTime, machineLabel, startOfDay } from "@/lib/mes";
 
 export const Route = createFileRoute("/_authenticated/shinko")({
   head: () => ({
@@ -42,7 +42,7 @@ function Shinko() {
 
   if (isLoading || !data) return <p className="text-xs">Đang tải 進行リスト…</p>;
 
-  const machineByCode = new Map(data.machines.map((m) => [m.id, m.code]));
+  const machineByCode = new Map(data.machines.map((m) => [m.id, machineLabel(m)]));
   const now = Date.now();
 
   if (jobView) {

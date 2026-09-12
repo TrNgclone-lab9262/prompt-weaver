@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageTitle } from "@/components/AppShell";
 import { Timeline, TimelineLegend, type TimelineBar } from "@/components/Timeline";
-import { startOfDay, machineStatusClass } from "@/lib/mes";
+import { startOfDay, machineStatusClass, machineLabel } from "@/lib/mes";
 
 export const Route = createFileRoute("/_authenticated/timeline")({
   head: () => ({
@@ -116,7 +116,7 @@ function TimelinePage() {
             <option value="ALL">Tất cả máy</option>
             {data.machines.map((m) => (
               <option key={m.id} value={m.code}>
-                {m.code}
+                {machineLabel(m)}
               </option>
             ))}
           </select>

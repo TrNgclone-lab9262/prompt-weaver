@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageTitle } from "@/components/AppShell";
 import { useRole } from "@/hooks/useAuth";
 import { logAudit } from "@/lib/audit";
-import { fmtDate, WO_STATUSES } from "@/lib/mes";
+import { fmtDate, machineLabel, WO_STATUSES } from "@/lib/mes";
 
 export const Route = createFileRoute("/_authenticated/work-orders")({
   head: () => ({
@@ -48,7 +48,7 @@ function WorkOrders() {
     queryFn: async () => {
       const [wos, machines] = await Promise.all([
         supabase.from("work_orders").select("*").order("due_date"),
-        supabase.from("machines").select("id, code").order("sort_order"),
+        supabase.from("machines").select("id, code, name").order("sort_order"),
       ]);
       if (wos.error) throw wos.error;
       if (machines.error) throw machines.error;
@@ -133,7 +133,7 @@ function WorkOrders() {
                 <option value="">— chưa gán —</option>
                 {data.machines.map((m) => (
                   <option key={m.id} value={m.id}>
-                    {m.code}
+                    {machineLabel(m)}
                   </option>
                 ))}
               </select>
@@ -195,7 +195,7 @@ function WorkOrders() {
                 <td className="text-right">{w.quantity}</td>
                 <td className="text-center">{w.priority}</td>
                 <td>{fmtDate(w.due_date)}</td>
-                <td>{data.machines.find((m) => m.id === w.machine_id)?.code ?? "-"}</td>
+                <td>{machineLabel(data.machines.find((m) => m.id === w.machine_id))}</td>
                 <td>{w.status}</td>
                 <td>
                   {isManager && (
