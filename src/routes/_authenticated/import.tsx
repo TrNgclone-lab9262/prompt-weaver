@@ -58,24 +58,49 @@ async function ensureMachine(
   name: string | undefined,
   workshop: string | undefined,
   cache: Map<string, string>,
+  renamed?: string[],
 ) {
   const key = code.trim();
   if (!key) return null;
-  if (cache.has(key)) return cache.get(key)!;
-  const { data } = await supabase.from("machines").select("id").eq("code", key).maybeSingle();
+  const newName = name?.trim() || "";
+  const newWorkshop = workshop?.trim() || "";
+  const cacheKey = `${key}|${newName}|${newWorkshop}`;
+  if (cache.has(cacheKey)) return cache.get(cacheKey)!;
+
+  const { data } = await supabase
+    .from("machines")
+    .select("id, code, name, workshop")
+    .eq("code", key)
+    .maybeSingle();
+
   if (data) {
-    cache.set(key, data.id);
+    const patch: { name?: string; workshop?: string } = {};
+    if (newName && newName !== data.name) patch.name = newName;
+    if (newWorkshop && newWorkshop !== data.workshop) patch.workshop = newWorkshop;
+    if (Object.keys(patch).length) {
+      const { error } = await supabase
+        .from("machines")
+        .update({ ...patch, updated_at: new Date().toISOString() })
+        .eq("id", data.id);
+      if (error) throw error;
+      if (patch.name) renamed?.push(`${key}: "${data.name}" → "${patch.name}"`);
+      if (patch.workshop) renamed?.push(`${key}: xưởng "${data.workshop}" → "${patch.workshop}"`);
+    }
+    cache.set(cacheKey, data.id);
     return data.id;
   }
+
   const { data: created, error } = await supabase
     .from("machines")
-    .insert({ code: key, name: name?.trim() || key, workshop: workshop?.trim() || "MC" })
+    .insert({ code: key, name: newName || key, workshop: newWorkshop || "MC" })
     .select("id")
     .single();
   if (error) throw error;
-  cache.set(key, created.id);
+  renamed?.push(`${key}: tạo máy mới "${newName || key}"`);
+  cache.set(cacheKey, created.id);
   return created.id;
 }
+
 
 async function findOperator(code: string | undefined, cache: Map<string, string | null>) {
   const key = (code ?? "").trim();
