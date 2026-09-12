@@ -146,6 +146,7 @@ function ImportPage() {
       const { rows, recognized, ignored } = mapRows(parseCsv(await file.text()));
       reportColumns("plan.csv", recognized, ignored);
       const machineCache = new Map<string, string>();
+      const machineChanges: string[] = [];
       const errors: string[] = [];
       let ok = 0;
 
