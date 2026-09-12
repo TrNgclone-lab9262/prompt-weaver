@@ -224,6 +224,8 @@ function ImportPage() {
       }
 
       push(`plan.csv: đã nạp ${ok}/${rows.length} dòng, lỗi ${errors.length}.`, ...errors.slice(0, 30));
+      if (machineChanges.length)
+        push(`Máy được cập nhật (${machineChanges.length}): ${machineChanges.join("; ")}`);
       if (errors.length > 30) push(`… và ${errors.length - 30} lỗi khác.`);
       await logAudit("IMPORT", "plan_csv", null, { rows: ok, errors: errors.length });
       qc.invalidateQueries();
