@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageTitle } from "@/components/AppShell";
 import { Timeline, TimelineLegend, type TimelineBar } from "@/components/Timeline";
-import { fmtDate, fmtTime, startOfDay } from "@/lib/mes";
+import { fmtDate, fmtTime, machineLabel, startOfDay } from "@/lib/mes";
 
 export const Route = createFileRoute("/_authenticated/shinko")({
   head: () => ({

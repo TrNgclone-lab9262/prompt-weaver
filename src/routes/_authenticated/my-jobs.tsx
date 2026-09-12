@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageTitle } from "@/components/AppShell";
 import { useRole } from "@/hooks/useAuth";
 import { logAudit } from "@/lib/audit";
-import { fmtTime } from "@/lib/mes";
+import { fmtTime, machineLabel } from "@/lib/mes";
 
 export const Route = createFileRoute("/_authenticated/my-jobs")({
   head: () => ({

@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageTitle } from "@/components/AppShell";
 import { useRole } from "@/hooks/useAuth";
 import { logAudit } from "@/lib/audit";
-import { fmtDate, WO_STATUSES } from "@/lib/mes";
+import { fmtDate, machineLabel, WO_STATUSES } from "@/lib/mes";
 
 export const Route = createFileRoute("/_authenticated/work-orders")({
   head: () => ({
