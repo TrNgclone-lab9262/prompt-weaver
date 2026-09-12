@@ -163,6 +163,7 @@ function ImportPage() {
             row["machine_name"],
             row["workshop"],
             machineCache,
+            machineChanges,
           );
           const woNumber =
             row["wo_number"] || `${part}-${row["operation"] || "OP"}-${row["operation_seq"] || i + 1}`;
