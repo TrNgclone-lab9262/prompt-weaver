@@ -7,9 +7,9 @@ import { fmtTime } from "@/lib/mes";
 export const Route = createFileRoute("/_authenticated/audit")({
   head: () => ({
     meta: [
-      { title: "Audit Log — JAPAN MC MES" },
+      { title: "Audit Log — DYNAMO VIETNAM MC - MES" },
       { name: "description", content: "Nhật ký thao tác quan trọng trên hệ thống MES: ai làm gì, lúc nào." },
-      { property: "og:title", content: "Audit Log — JAPAN MC MES" },
+      { property: "og:title", content: "Audit Log — DYNAMO VIETNAM MC - MES" },
       { property: "og:description", content: "Nhật ký thao tác hệ thống MES." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

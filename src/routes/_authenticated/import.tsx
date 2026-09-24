@@ -10,13 +10,13 @@ import { ACTUAL_SAMPLE_CSV, PLAN_SAMPLE_CSV, mapRows } from "@/lib/csv-map";
 export const Route = createFileRoute("/_authenticated/import")({
   head: () => ({
     meta: [
-      { title: "Import CSV — JAPAN MC MES" },
+      { title: "Import CSV — DYNAMO VIETNAM MC - MES" },
       {
         name: "description",
         content:
           "Nạp dữ liệu kế hoạch và thực tế từ file plan.csv và actual.csv, hỗ trợ cả tên cột cũ lẫn bộ cột chuẩn mới.",
       },
-      { property: "og:title", content: "Import CSV — JAPAN MC MES" },
+      { property: "og:title", content: "Import CSV — DYNAMO VIETNAM MC - MES" },
       { property: "og:description", content: "Nạp dữ liệu sản xuất từ file CSV vào hệ thống MES." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -10,9 +10,9 @@ import { fmtDate, machineLabel, WO_STATUSES } from "@/lib/mes";
 export const Route = createFileRoute("/_authenticated/work-orders")({
   head: () => ({
     meta: [
-      { title: "Work Orders — JAPAN MC MES" },
+      { title: "Work Orders — DYNAMO VIETNAM MC - MES" },
       { name: "description", content: "Tạo, sửa và điều phối lệnh sản xuất: mã hàng, số lượng, hạn giao và máy gia công." },
-      { property: "og:title", content: "Work Orders — JAPAN MC MES" },
+      { property: "og:title", content: "Work Orders — DYNAMO VIETNAM MC - MES" },
       { property: "og:description", content: "Quản lý lệnh sản xuất của nhà máy." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

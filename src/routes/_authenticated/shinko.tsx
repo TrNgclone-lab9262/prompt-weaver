@@ -9,9 +9,9 @@ import { fmtDate, fmtTime, machineLabel, startOfDay } from "@/lib/mes";
 export const Route = createFileRoute("/_authenticated/shinko")({
   head: () => ({
     meta: [
-      { title: "進行リスト Shinko Risuto — JAPAN MC MES" },
+      { title: "進行リスト Shinko Risuto — DYNAMO VIETNAM MC - MES" },
       { name: "description", content: "Bảng tiến độ đơn hàng: số lượng kế hoạch, đạt, NG, phần trăm hoàn thành và hạn giao." },
-      { property: "og:title", content: "進行リスト Shinko Risuto — JAPAN MC MES" },
+      { property: "og:title", content: "進行リスト Shinko Risuto — DYNAMO VIETNAM MC - MES" },
       { property: "og:description", content: "Bảng tiến độ đơn hàng sản xuất." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

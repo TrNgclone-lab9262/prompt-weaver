@@ -9,9 +9,9 @@ import { startOfDay, machineStatusClass, machineLabel } from "@/lib/mes";
 export const Route = createFileRoute("/_authenticated/timeline")({
   head: () => ({
     meta: [
-      { title: "Production Timeline — JAPAN MC MES" },
+      { title: "Production Timeline — DYNAMO VIETNAM MC - MES" },
       { name: "description", content: "Timeline sản xuất theo máy với thanh kế hoạch và thanh thực tế, vạch giờ hiện tại." },
-      { property: "og:title", content: "Production Timeline — JAPAN MC MES" },
+      { property: "og:title", content: "Production Timeline — DYNAMO VIETNAM MC - MES" },
       { property: "og:description", content: "Timeline máy, Plan vs Actual theo ngày/tuần/tháng." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

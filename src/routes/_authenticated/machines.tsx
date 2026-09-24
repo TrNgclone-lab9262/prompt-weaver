@@ -27,9 +27,9 @@ const statusBorderClass: Record<MachineStatus, string> = {
 export const Route = createFileRoute("/_authenticated/machines")({
   head: () => ({
     meta: [
-      { title: "Machine Status — JAPAN MC MES" },
+      { title: "Machine Status — DYNAMO VIETNAM MC - MES" },
       { name: "description", content: "Theo dõi và cập nhật trạng thái máy: chạy, chờ, setup, hỏng máy, bảo trì, ngừng." },
-      { property: "og:title", content: "Machine Status — JAPAN MC MES" },
+      { property: "og:title", content: "Machine Status — DYNAMO VIETNAM MC - MES" },
       { property: "og:description", content: "Trạng thái thiết bị và báo hỏng máy." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

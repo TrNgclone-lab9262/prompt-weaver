@@ -10,9 +10,9 @@ import { fmtTime, machineLabel } from "@/lib/mes";
 export const Route = createFileRoute("/_authenticated/my-jobs")({
   head: () => ({
     meta: [
-      { title: "My Jobs — JAPAN MC MES" },
+      { title: "My Jobs — DYNAMO VIETNAM MC - MES" },
       { name: "description", content: "Màn hình thợ máy: bắt đầu, tạm dừng, hoàn thành công việc và nhập số lượng đạt / NG." },
-      { property: "og:title", content: "My Jobs — JAPAN MC MES" },
+      { property: "og:title", content: "My Jobs — DYNAMO VIETNAM MC - MES" },
       { property: "og:description", content: "Thực hiện công việc gia công tại xưởng." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -51,7 +51,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen flex-col overflow-hidden">
       <header className="flex flex-wrap items-center justify-between gap-2 bg-primary px-3 py-1.5 text-primary-foreground">
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="mr-2 text-sm font-bold">DYNAMO JAPAN MC — MES</span>
+          <span className="mr-2 text-sm font-bold">DYNAMO VIETNAM MC - MES</span>
           {items.map((item) => (
             <Link
               key={item.to}
