@@ -79,6 +79,7 @@ function TimelinePage() {
         actualStart: j.actual_start,
         actualEnd: j.actual_end,
         colorKey: wo?.part_number ?? j.id,
+        workOrderId: j.work_order_id,
         delayed:
           j.status !== "COMPLETED" && !!j.plan_end && new Date(j.plan_end).getTime() < now,
       };
