@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,9 +10,9 @@ import { fmtTime, machineLabel } from "@/lib/mes";
 export const Route = createFileRoute("/_authenticated/my-jobs")({
   head: () => ({
     meta: [
-      { title: "My Jobs — JAPAN MC MES" },
+      { title: "My Jobs — DYNAMO VIETNAM MC - MES" },
       { name: "description", content: "Màn hình thợ máy: bắt đầu, tạm dừng, hoàn thành công việc và nhập số lượng đạt / NG." },
-      { property: "og:title", content: "My Jobs — JAPAN MC MES" },
+      { property: "og:title", content: "My Jobs — DYNAMO VIETNAM MC - MES" },
       { property: "og:description", content: "Thực hiện công việc gia công tại xưởng." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -106,7 +106,7 @@ function MyJobs() {
             return (
               <div key={j.id} className="rounded border border-border p-2">
                 <div className="flex items-center justify-between">
-                  <b className="text-[12px]">{wo?.part_number}</b>
+                  <Link to="/shinko" search={{ wo: j.work_order_id }} className="text-[12px] font-bold text-primary underline">{wo?.part_number}</Link>
                   <span className="rounded bg-secondary px-2 py-0.5 text-[10px] font-bold">{j.status}</span>
                 </div>
                 <div className="text-[10px] text-muted-foreground">

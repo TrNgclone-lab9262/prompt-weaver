@@ -5,10 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Đăng nhập — JAPAN MC MES" },
-      { name: "description", content: "Đăng nhập hệ thống MES JAPAN MC để xem timeline sản xuất, KPI và lệnh sản xuất." },
-      { property: "og:title", content: "Đăng nhập — JAPAN MC MES" },
-      { property: "og:description", content: "Đăng nhập hệ thống MES JAPAN MC." },
+      { title: "Đăng nhập — DYNAMO VIETNAM MC - MES" },
+      { name: "description", content: "Đăng nhập hệ thống DYNAMO VIETNAM MC - MES để xem timeline sản xuất, KPI và lệnh sản xuất." },
+      { property: "og:title", content: "Đăng nhập — DYNAMO VIETNAM MC - MES" },
+      { property: "og:description", content: "Đăng nhập hệ thống DYNAMO VIETNAM MC - MES." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -71,7 +71,7 @@ function AuthPage() {
   return (
     <div className="flex min-h-screen items-center justify-center p-6">
       <div className="mes-card w-full max-w-sm p-6">
-        <p className="text-[11px] font-bold tracking-widest text-primary">DYNAMO JAPAN MC</p>
+        <p className="text-[11px] font-bold tracking-widest text-primary">DYNAMO VIETNAM MC</p>
         <h1 className="mb-4 text-lg font-bold">
           {mode === "login" ? "Đăng nhập MES" : "Tạo tài khoản"}
         </h1>

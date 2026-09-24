@@ -7,9 +7,9 @@ import { machineStatusClass } from "@/lib/mes";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard KPI — JAPAN MC MES" },
+      { title: "Dashboard KPI — DYNAMO VIETNAM MC - MES" },
       { name: "description", content: "KPI sản xuất realtime: máy chạy, chờ, hỏng, số lượng kế hoạch và thực tế." },
-      { property: "og:title", content: "Dashboard KPI — JAPAN MC MES" },
+      { property: "og:title", content: "Dashboard KPI — DYNAMO VIETNAM MC - MES" },
       { property: "og:description", content: "KPI sản xuất realtime của nhà máy." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

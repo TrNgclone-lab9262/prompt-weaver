@@ -9,19 +9,20 @@ import { fmtDate, fmtTime, machineLabel, startOfDay } from "@/lib/mes";
 export const Route = createFileRoute("/_authenticated/shinko")({
   head: () => ({
     meta: [
-      { title: "進行リスト Shinko Risuto — JAPAN MC MES" },
+      { title: "進行リスト Shinko Risuto — DYNAMO VIETNAM MC - MES" },
       { name: "description", content: "Bảng tiến độ đơn hàng: số lượng kế hoạch, đạt, NG, phần trăm hoàn thành và hạn giao." },
-      { property: "og:title", content: "進行リスト Shinko Risuto — JAPAN MC MES" },
+      { property: "og:title", content: "進行リスト Shinko Risuto — DYNAMO VIETNAM MC - MES" },
       { property: "og:description", content: "Bảng tiến độ đơn hàng sản xuất." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  validateSearch: (s: Record<string, unknown>) => ({ wo: typeof s["wo"] === "string" ? s["wo"] : undefined }),
   component: Shinko,
 });
 
 function Shinko() {
-  const [jobView, setJobView] = useState<string | null>(null);
+  const [jobView, setJobView] = useState<string | null>(Route.useSearch().wo ?? null);
   const [keyword, setKeyword] = useState("");
 
   const { data, isLoading } = useQuery({
@@ -46,7 +47,8 @@ function Shinko() {
   const now = Date.now();
 
   if (jobView) {
-    const wo = data.wos.find((w) => w.id === jobView)!;
+    const wo = data.wos.find((w) => w.id === jobView);
+    if (!wo) return <p className="text-xs">Không tìm thấy mã hàng.</p>;
     const jobs = data.jobs.filter((j) => j.work_order_id === jobView);
     const rows = data.machines
       .filter((m) => jobs.some((j) => j.machine_id === m.id))

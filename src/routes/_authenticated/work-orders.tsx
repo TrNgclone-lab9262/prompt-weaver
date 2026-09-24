@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,9 +10,9 @@ import { fmtDate, machineLabel, WO_STATUSES } from "@/lib/mes";
 export const Route = createFileRoute("/_authenticated/work-orders")({
   head: () => ({
     meta: [
-      { title: "Work Orders — JAPAN MC MES" },
+      { title: "Work Orders — DYNAMO VIETNAM MC - MES" },
       { name: "description", content: "Tạo, sửa và điều phối lệnh sản xuất: mã hàng, số lượng, hạn giao và máy gia công." },
-      { property: "og:title", content: "Work Orders — JAPAN MC MES" },
+      { property: "og:title", content: "Work Orders — DYNAMO VIETNAM MC - MES" },
       { property: "og:description", content: "Quản lý lệnh sản xuất của nhà máy." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -190,7 +190,7 @@ function WorkOrders() {
               <tr key={w.id}>
                 <td>{w.wo_number}</td>
                 <td>{w.customer}</td>
-                <td>{w.part_number}</td>
+                <td><Link to="/shinko" search={{ wo: w.id }} className="font-bold text-primary underline">{w.part_number}</Link></td>
                 <td>{w.part_name}</td>
                 <td className="text-right">{w.quantity}</td>
                 <td className="text-center">{w.priority}</td>
