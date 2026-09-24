@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/shinko")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>) => ({ wo: typeof s.wo === "string" ? s.wo : undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({ wo: typeof s["wo"] === "string" ? s["wo"] : undefined }),
   component: Shinko,
 });
 
