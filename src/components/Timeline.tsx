@@ -128,8 +128,8 @@ export function Timeline({ rows, bars, rangeStart, days, onBarClick }: Props) {
                           <button
                             type="button"
                             onClick={() => onBarClick?.(bar)}
-                            title={bar.title}
-                            className="absolute top-0 h-4 overflow-hidden rounded-sm px-1 text-left text-[10px] font-bold text-primary-foreground"
+                            title={`${bar.title} — bấm để xem chi tiết`}
+                            className="absolute top-0 h-4 cursor-pointer overflow-hidden rounded-sm px-1 text-left text-[10px] font-bold text-primary-foreground transition hover:brightness-110 hover:ring-1 hover:ring-ring"
                             style={{
                               left: planPos.left,
                               width: planPos.width,
@@ -142,13 +142,15 @@ export function Timeline({ rows, bars, rangeStart, days, onBarClick }: Props) {
                           </button>
                         )}
                         {actPos && (
-                          <div
-                            title={`ACTUAL — ${bar.title}`}
-                            className="absolute top-5 h-4 overflow-hidden rounded-sm border border-actual-border bg-actual px-1 text-[10px] font-bold text-foreground"
+                          <button
+                            type="button"
+                            onClick={() => onBarClick?.(bar)}
+                            title={`THỰC TẾ — ${bar.title} — bấm để xem chi tiết`}
+                            className="absolute top-5 h-4 cursor-pointer overflow-hidden rounded-sm border border-actual-border bg-actual px-1 text-left text-[10px] font-bold text-foreground transition hover:brightness-95 hover:ring-1 hover:ring-ring"
                             style={{ left: actPos.left, width: actPos.width }}
                           >
                             ACTUAL
-                          </div>
+                          </button>
                         )}
                       </div>
                     );
