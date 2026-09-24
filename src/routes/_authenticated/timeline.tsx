@@ -28,6 +28,8 @@ function TimelinePage() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [machineFilter, setMachineFilter] = useState("ALL");
   const [selected, setSelected] = useState<TimelineBar | null>(null);
+  const [trayOpen, setTrayOpen] = useState(false);
+  const [traySearch, setTraySearch] = useState("");
 
   const base = startOfDay(new Date());
   if (zoom === 7) base.setDate(base.getDate() - base.getDay() + 1);
@@ -143,15 +145,56 @@ function TimelinePage() {
           </button>
         </div>
       )}
-      <div className="flex flex-wrap gap-1">
-        {data.machines.map((m) => (
-          <span
-            key={m.id}
-            className={`rounded px-2 py-0.5 text-[10px] font-bold ${machineStatusClass[m.status] ?? ""}`}
+      <div className="mes-card p-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setTrayOpen(!trayOpen)}
+            className="rounded bg-primary px-2 py-1 text-[11px] font-bold text-primary-foreground"
           >
-            {m.code} {m.status}
-          </span>
-        ))}
+            {trayOpen ? "▲ Thu gọn" : "▼ Danh sách máy"} ({data.machines.length})
+          </button>
+          {["RUN", "WAIT", "SETUP", "BREAKDOWN", "MAINTENANCE", "OFFLINE"].map((s) => {
+            const count = data.machines.filter((m) => m.status === s).length;
+            if (!count) return null;
+            return (
+              <button
+                key={s}
+                onClick={() => setStatusFilter(statusFilter === s ? "ALL" : s)}
+                title="Bấm để lọc timeline theo trạng thái này"
+                className={`rounded px-2 py-0.5 text-[10px] font-bold ${machineStatusClass[s] ?? ""} ${statusFilter === s ? "ring-2 ring-ring" : ""}`}
+              >
+                {s} {count}
+              </button>
+            );
+          })}
+          {trayOpen && (
+            <input
+              value={traySearch}
+              onChange={(e) => setTraySearch(e.target.value)}
+              placeholder="Tìm mã/tên máy…"
+              className="ml-auto rounded border border-input bg-card px-2 py-1 text-[11px]"
+            />
+          )}
+        </div>
+        {trayOpen && (
+          <div className="mt-2 flex max-h-40 flex-wrap gap-1 overflow-y-auto">
+            {data.machines
+              .filter((m) => {
+                const q = traySearch.trim().toLowerCase();
+                return !q || m.code.toLowerCase().includes(q) || (m.name ?? "").toLowerCase().includes(q);
+              })
+              .map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => setMachineFilter(machineFilter === m.code ? "ALL" : m.code)}
+                  title={`${machineLabel(m)} — bấm để lọc timeline theo máy này`}
+                  className={`rounded px-2 py-0.5 text-[10px] font-bold ${machineStatusClass[m.status] ?? ""} ${machineFilter === m.code ? "ring-2 ring-ring" : ""}`}
+                >
+                  {m.code}
+                </button>
+              ))}
+          </div>
+        )}
       </div>
     </>
   );
