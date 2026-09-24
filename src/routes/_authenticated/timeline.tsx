@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -79,6 +79,7 @@ function TimelinePage() {
         actualStart: j.actual_start,
         actualEnd: j.actual_end,
         colorKey: wo?.part_number ?? j.id,
+        workOrderId: j.work_order_id,
         delayed:
           j.status !== "COMPLETED" && !!j.plan_end && new Date(j.plan_end).getTime() < now,
       };
@@ -137,10 +138,21 @@ function TimelinePage() {
       <TimelineLegend />
       <Timeline rows={rows} bars={bars} rangeStart={base} days={zoom} onBarClick={setSelected} />
       {selected && (
-        <div className="mes-card p-2 text-[11px]">
-          <b>{selected.title}</b> — Plan: {selected.planStart ?? "-"} → {selected.planEnd ?? "-"} ·
-          Actual: {selected.actualStart ?? "-"} → {selected.actualEnd ?? "đang chạy"}
-          <button onClick={() => setSelected(null)} className="ml-2 underline">
+        <div className="mes-card flex flex-wrap items-center gap-2 p-2 text-[11px]">
+          <span>
+            <b>{selected.title}</b> — Kế hoạch: {selected.planStart ?? "-"} → {selected.planEnd ?? "-"} ·
+            Thực tế: {selected.actualStart ?? "-"} → {selected.actualEnd ?? "đang chạy"}
+          </span>
+          {selected.workOrderId && (
+            <Link
+              to="/shinko"
+              search={{ wo: selected.workOrderId }}
+              className="rounded bg-primary px-2 py-1 font-bold text-primary-foreground"
+            >
+              🔍 Xem JOB TIMELINE
+            </Link>
+          )}
+          <button onClick={() => setSelected(null)} className="underline">
             đóng
           </button>
         </div>
