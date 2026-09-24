@@ -17,6 +17,7 @@ export type TimelineBar = {
   actualEnd: string | null;
   colorKey: string;
   delayed: boolean;
+  workOrderId?: string;
 };
 
 type Props = {
