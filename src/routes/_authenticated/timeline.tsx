@@ -28,6 +28,8 @@ function TimelinePage() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [machineFilter, setMachineFilter] = useState("ALL");
   const [selected, setSelected] = useState<TimelineBar | null>(null);
+  const [trayOpen, setTrayOpen] = useState(false);
+  const [traySearch, setTraySearch] = useState("");
 
   const base = startOfDay(new Date());
   if (zoom === 7) base.setDate(base.getDate() - base.getDay() + 1);
