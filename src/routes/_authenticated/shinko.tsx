@@ -17,11 +17,12 @@ export const Route = createFileRoute("/_authenticated/shinko")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  validateSearch: (s: Record<string, unknown>) => ({ wo: typeof s.wo === "string" ? s.wo : undefined }),
   component: Shinko,
 });
 
 function Shinko() {
-  const [jobView, setJobView] = useState<string | null>(null);
+  const [jobView, setJobView] = useState<string | null>(Route.useSearch().wo ?? null);
   const [keyword, setKeyword] = useState("");
 
   const { data, isLoading } = useQuery({
@@ -46,7 +47,8 @@ function Shinko() {
   const now = Date.now();
 
   if (jobView) {
-    const wo = data.wos.find((w) => w.id === jobView)!;
+    const wo = data.wos.find((w) => w.id === jobView);
+    if (!wo) return <p className="text-xs">Không tìm thấy mã hàng.</p>;
     const jobs = data.jobs.filter((j) => j.work_order_id === jobView);
     const rows = data.machines
       .filter((m) => jobs.some((j) => j.machine_id === m.id))

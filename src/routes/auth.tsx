@@ -6,9 +6,9 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Đăng nhập — DYNAMO VIETNAM MC - MES" },
-      { name: "description", content: "Đăng nhập hệ thống MES JAPAN MC để xem timeline sản xuất, KPI và lệnh sản xuất." },
+      { name: "description", content: "Đăng nhập hệ thống DYNAMO VIETNAM MC - MES để xem timeline sản xuất, KPI và lệnh sản xuất." },
       { property: "og:title", content: "Đăng nhập — DYNAMO VIETNAM MC - MES" },
-      { property: "og:description", content: "Đăng nhập hệ thống MES JAPAN MC." },
+      { property: "og:description", content: "Đăng nhập hệ thống DYNAMO VIETNAM MC - MES." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

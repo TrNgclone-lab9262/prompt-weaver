@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -190,7 +190,7 @@ function WorkOrders() {
               <tr key={w.id}>
                 <td>{w.wo_number}</td>
                 <td>{w.customer}</td>
-                <td>{w.part_number}</td>
+                <td><Link to="/shinko" search={{ wo: w.id }} className="font-bold text-primary underline">{w.part_number}</Link></td>
                 <td>{w.part_name}</td>
                 <td className="text-right">{w.quantity}</td>
                 <td className="text-center">{w.priority}</td>
