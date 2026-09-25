@@ -19,13 +19,35 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
-function Kpi({ label, value, tone }: { label: string; value: string | number; tone?: string }) {
-  return (
-    <div className="mes-card flex-1 p-2 text-center">
+function Kpi({
+  label,
+  value,
+  tone,
+  to,
+}: {
+  label: string;
+  value: string | number;
+  tone?: string;
+  to?: "/machines" | "/shinko";
+}) {
+  const body = (
+    <>
       <div className="text-[10px] font-bold text-muted-foreground">{label}</div>
       <div className={`text-xl font-bold ${tone ?? "text-primary"}`}>{value}</div>
-    </div>
+    </>
   );
+  if (to) {
+    return (
+      <Link
+        to={to}
+        className="mes-card flex-1 cursor-pointer p-2 text-center transition-colors hover:border-primary"
+        title="Bấm để mở trang xử lý"
+      >
+        {body}
+      </Link>
+    );
+  }
+  return <div className="mes-card flex-1 p-2 text-center">{body}</div>;
 }
 
 function Dashboard() {
