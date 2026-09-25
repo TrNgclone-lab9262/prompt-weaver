@@ -86,11 +86,11 @@ function Dashboard() {
     <>
       <PageTitle title="DASHBOARD" sub="KPI sản xuất — tự làm mới mỗi 60 giây" />
       <div className="flex flex-wrap gap-2">
-        <Kpi label="RUNNING" value={count("RUN")} />
-        <Kpi label="WAITING" value={count("WAIT")} tone="text-muted-foreground" />
-        <Kpi label="SETUP" value={count("SETUP")} tone="text-setup" />
-        <Kpi label="BREAKDOWN" value={count("BREAKDOWN")} tone="text-destructive" />
-        <Kpi label="DELAY JOBS" value={delayed} tone="text-destructive" />
+        <Kpi label="RUNNING" value={count("RUN")} to="/machines" />
+        <Kpi label="WAITING" value={count("WAIT")} tone="text-muted-foreground" to="/machines" />
+        <Kpi label="SETUP" value={count("SETUP")} tone="text-setup" to="/machines" />
+        <Kpi label="BREAKDOWN" value={count("BREAKDOWN")} tone="text-destructive" to="/machines" />
+        <Kpi label="DELAY JOBS" value={delayed} tone="text-destructive" to="/shinko" />
       </div>
       <div className="flex flex-wrap gap-2">
         <Kpi label="PLANNED QTY" value={planned} />
@@ -101,20 +101,47 @@ function Dashboard() {
         <Kpi label="QUALITY %" value={`${quality}%`} />
       </div>
 
-      <div className="mes-card min-h-0 flex-1 overflow-auto p-2">
+      <div className="mes-card flex min-h-0 flex-1 flex-col overflow-hidden p-2">
         <h2 className="mb-2 text-xs font-bold">MACHINE STATUS / 設備状況</h2>
-        <div className="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-6">
-          {data.machines.map((m) => (
-            <div key={m.id} className="rounded border border-border p-2">
-              <div className="text-[11px] font-bold">{m.code}</div>
-              <div className="truncate text-[10px] text-muted-foreground">{m.name}</div>
-              <span
-                className={`mt-1 inline-block rounded px-2 py-0.5 text-[10px] font-bold ${machineStatusClass[m.status] ?? ""}`}
+        <div className="mb-2 flex flex-wrap gap-1">
+          {(["ALL", "RUN", "WAIT", "SETUP", "BREAKDOWN", "MAINTENANCE", "OFFLINE"] as const).map((s) => {
+            const n = s === "ALL" ? data.machines.length : count(s);
+            const on = statusFilter === s;
+            return (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setStatusFilter(s)}
+                className={`rounded border px-2 py-0.5 text-[10px] font-bold transition-colors ${
+                  on ? "border-primary bg-primary text-primary-foreground" : "border-border hover:border-primary"
+                }`}
               >
-                {m.status}
-              </span>
-            </div>
-          ))}
+                {s} ({n})
+              </button>
+            );
+          })}
+        </div>
+        <div className="min-h-0 flex-1 overflow-auto">
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-6">
+            {data.machines
+              .filter((m) => statusFilter === "ALL" || m.status === statusFilter)
+              .map((m) => (
+                <Link
+                  key={m.id}
+                  to="/machines"
+                  className="cursor-pointer rounded border border-border p-2 transition-colors hover:border-primary"
+                  title="Bấm để mở trang Trạng thái máy"
+                >
+                  <div className="text-[11px] font-bold">{m.code}</div>
+                  <div className="truncate text-[10px] text-muted-foreground">{m.name}</div>
+                  <span
+                    className={`mt-1 inline-block rounded px-2 py-0.5 text-[10px] font-bold ${machineStatusClass[m.status] ?? ""}`}
+                  >
+                    {m.status}
+                  </span>
+                </Link>
+              ))}
+          </div>
         </div>
       </div>
     </>
