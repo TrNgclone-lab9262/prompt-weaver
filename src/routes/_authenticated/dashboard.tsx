@@ -30,7 +30,7 @@ function Kpi({
   value: string | number;
   tone?: string;
   to?: "/timeline" | "/shinko";
-  search?: Record<string, string>;
+  search?: { status: string | undefined; machine: string | undefined };
 }) {
   const body = (
     <>
@@ -42,7 +42,7 @@ function Kpi({
     return (
       <Link
         to={to}
-        search={search ?? {}}
+        search={search ?? { status: undefined, machine: undefined }}
         className="mes-card flex-1 cursor-pointer p-2 text-center transition-colors hover:border-primary"
         title="Bấm để mở trang xử lý"
       >
@@ -90,10 +90,11 @@ function Dashboard() {
     <>
       <PageTitle title="DASHBOARD" sub="KPI sản xuất — tự làm mới mỗi 60 giây" />
       <div className="flex flex-wrap gap-2">
-        <Kpi label="RUNNING" value={count("RUN")} to="/timeline" search={{ status: "RUN" }} />
-        <Kpi label="WAITING" value={count("WAIT")} tone="text-muted-foreground" to="/timeline" search={{ status: "WAIT" }} />
-        <Kpi label="SETUP" value={count("SETUP")} tone="text-setup" to="/timeline" search={{ status: "SETUP" }} />
-        <Kpi label="BREAKDOWN" value={count("BREAKDOWN")} tone="text-destructive" to="/timeline" search={{ status: "BREAKDOWN" }} />
+        <Kpi label="RUNNING" value={count("RUN")} to="/timeline" search={{ status: "RUN", machine: undefined }} />
+        <Kpi label="WAITING" value={count("WAIT")} tone="text-muted-foreground" to="/timeline" search={{ status: "WAIT", machine: undefined }} />
+        <Kpi label="SETUP" value={count("SETUP")} tone="text-setup" to="/timeline" search={{ status: "SETUP", machine: undefined }} />
+        <Kpi label="BREAKDOWN" value={count("BREAKDOWN")} tone="text-destructive" to="/timeline" search={{ status: "BREAKDOWN", machine: undefined }} />
+
         <Kpi label="DELAY JOBS" value={delayed} tone="text-destructive" to="/shinko" />
 
       </div>
@@ -134,7 +135,7 @@ function Dashboard() {
                 <Link
                   key={m.id}
                   to="/timeline"
-                  search={{ machine: m.code }}
+                  search={{ machine: m.code, status: undefined }}
                   className="cursor-pointer rounded border border-border p-2 transition-colors hover:border-primary"
                   title="Bấm để xem lịch máy của máy này"
                 >
