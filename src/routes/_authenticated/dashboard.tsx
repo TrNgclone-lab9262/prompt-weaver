@@ -143,7 +143,7 @@ function Dashboard() {
           <div className="flex flex-wrap items-center gap-1">
             <span className="text-[10px] font-bold text-muted-foreground">STATUS:</span>
             {(["ALL", "RUN", "WAIT", "SETUP", "BREAKDOWN", "MAINTENANCE", "OFFLINE"] as const).map((s) => {
-              const n = s === "ALL" ? data.machines.length : count(s);
+              const n = s === "ALL" ? workshopMachines.length : count(s);
               const on = statusFilter === s;
               return (
                 <button
