@@ -75,8 +75,6 @@ function Dashboard() {
 
   if (isLoading || !data) return <p className="text-xs">Đang tải dữ liệu…</p>;
 
-  const count = (s: string) => data.machines.filter((m) => m.status === s).length;
-  const countWorkshop = (w: string) => data.machines.filter((m) => (m.workshop ?? "OTHER") === w).length;
   const PREFERRED = ["INSERT", "MOLD", "PIN"];
   const found = Array.from(new Set(data.machines.map((m) => m.workshop ?? "OTHER")));
   const workshops = [
@@ -84,12 +82,32 @@ function Dashboard() {
     ...PREFERRED.filter((w) => found.includes(w)),
     ...found.filter((w) => !PREFERRED.includes(w)).sort(),
   ];
-  const planned = data.wos.reduce((a, w) => a + (w.quantity ?? 0), 0);
-  const good = data.jobs.reduce((a, j) => a + (j.good_qty ?? 0), 0);
-  const ng = data.jobs.reduce((a, j) => a + (j.ng_qty ?? 0), 0);
+  const countWorkshop = (w: string) => data.machines.filter((m) => (m.workshop ?? "OTHER") === w).length;
+
+  // Machines inside the selected workshop (status badges count within this scope)
+  const workshopMachines = data.machines.filter(
+    (m) => workshopFilter === "ALL" || (m.workshop ?? "OTHER") === workshopFilter,
+  );
+  const count = (s: string) => workshopMachines.filter((m) => m.status === s).length;
+
+  // Machines matching BOTH filters — the scope every KPI below is computed on
+  const scopedMachines = workshopMachines.filter((m) => statusFilter === "ALL" || m.status === statusFilter);
+  const scopedIds = new Set(scopedMachines.map((m) => m.id));
+  const allScope = workshopFilter === "ALL" && statusFilter === "ALL";
+
+  const scopedJobs = allScope
+    ? data.jobs
+    : data.jobs.filter((j) => j.machine_id && scopedIds.has(j.machine_id));
+
+  const scopedWoIds = new Set(scopedJobs.map((j) => j.work_order_id));
+  const planned = allScope
+    ? data.wos.reduce((a, w) => a + (w.quantity ?? 0), 0)
+    : data.wos.filter((w) => scopedWoIds.has(w.id)).reduce((a, w) => a + (w.quantity ?? 0), 0);
+  const good = scopedJobs.reduce((a, j) => a + (j.good_qty ?? 0), 0);
+  const ng = scopedJobs.reduce((a, j) => a + (j.ng_qty ?? 0), 0);
   const actual = good + ng;
   const now = Date.now();
-  const delayed = data.jobs.filter(
+  const delayed = scopedJobs.filter(
     (j) => j.status !== "COMPLETED" && j.plan_end && new Date(j.plan_end).getTime() < now,
   ).length;
   const achievement = planned ? Math.round((good / planned) * 100) : 0;
