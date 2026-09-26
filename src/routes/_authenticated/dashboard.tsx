@@ -115,7 +115,10 @@ function Dashboard() {
 
   return (
     <>
-      <PageTitle title="DASHBOARD" sub="KPI sản xuất — tự làm mới mỗi 60 giây" />
+      <PageTitle
+        title="DASHBOARD"
+        sub={`KPI sản xuất — WORKSHOP: ${workshopFilter} · STATUS: ${statusFilter} · ${scopedMachines.length} máy — tự làm mới mỗi 60 giây`}
+      />
       <div className="flex flex-wrap gap-2">
         <Kpi label="RUNNING" value={count("RUN")} to="/timeline" search={{ status: "RUN", machine: undefined }} />
         <Kpi label="WAITING" value={count("WAIT")} tone="text-muted-foreground" to="/timeline" search={{ status: "WAIT", machine: undefined }} />
