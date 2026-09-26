@@ -1,12 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { localDB, DEFAULT_USERS, type UserProfile } from "@/lib/local-db";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Đăng nhập Local — DYNAMO VIETNAM MC - MES" },
-      { name: "description", content: "Đăng nhập hệ thống DYNAMO VIETNAM MC - MES chạy offline." },
+      { title: "Đăng nhập — DYNAMO VIETNAM MC - MES" },
+      { name: "description", content: "Đăng nhập hệ thống DYNAMO VIETNAM MC - MES để xem timeline sản xuất, KPI và lệnh sản xuất." },
+      { property: "og:title", content: "Đăng nhập — DYNAMO VIETNAM MC - MES" },
+      { property: "og:description", content: "Đăng nhập hệ thống DYNAMO VIETNAM MC - MES." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AuthPage,
@@ -14,63 +18,113 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [message, setMessage] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    localDB.init();
-    setUsers(localDB.getUsers());
-  }, []);
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) navigate({ to: "/dashboard", replace: true });
+    });
+  }, [navigate]);
 
-  function selectUser(u: UserProfile) {
-    localDB.setCurrentUser(u);
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setMessage(null);
+    if (mode === "login") {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) setMessage(error.message);
+      else navigate({ to: "/dashboard", replace: true });
+    } else {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: window.location.origin,
+          data: { full_name: fullName },
+        },
+      });
+      if (error) setMessage(error.message);
+      else if (data.session) navigate({ to: "/dashboard", replace: true });
+      else setMessage("Đã tạo tài khoản. Vui lòng kiểm tra email để xác nhận rồi đăng nhập.");
+    }
+    setBusy(false);
+  }
+
+  async function google() {
+    const { lovable } = await import("@/integrations/lovable/index");
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) {
+      setMessage("Không đăng nhập được bằng Google.");
+      return;
+    }
+    if (result.redirected) return;
     navigate({ to: "/dashboard", replace: true });
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-6">
-      <div className="mes-card w-full max-w-md p-6 shadow-lg border border-border">
-        <div className="mb-4 text-center">
-          <p className="text-xs font-bold tracking-widest text-primary">DYNAMO VIETNAM MC</p>
-          <h1 className="mt-1 text-xl font-bold">HỆ THỐNG MES NỘI BỘ (LOCAL)</h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Hệ thống đang chạy 100% trên máy tính cá nhân. Hãy chọn tài khoản phân xưởng để vào làm việc ngay:
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-3">
-          {users.map((u) => {
-            const roleBadge =
-              u.role === "admin"
-                ? "bg-destructive text-destructive-foreground"
-                : u.role === "leader"
-                ? "bg-warning text-foreground"
-                : "bg-primary text-primary-foreground";
-
-            return (
-              <button
-                key={u.id}
-                onClick={() => selectUser(u)}
-                className="flex items-center justify-between rounded-lg border border-border bg-card p-3 text-left transition hover:border-primary hover:shadow-md"
-              >
-                <div>
-                  <div className="font-semibold text-sm">{u.full_name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {u.employee_code} · {u.email}
-                  </div>
-                </div>
-                <span className={`rounded px-2 py-0.5 text-[10px] font-bold uppercase ${roleBadge}`}>
-                  {u.role}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="mt-6 border-t border-border pt-4 text-center">
-          <p className="text-[11px] text-muted-foreground">
-            ✨ Cơ sở dữ liệu offline: Dữ liệu được lưu trữ trực tiếp trên trình duyệt của máy bạn. Không phụ thuộc mạng Internet hay Lovable Cloud.
-          </p>
-        </div>
+    <div className="flex min-h-screen items-center justify-center p-6">
+      <div className="mes-card w-full max-w-sm p-6">
+        <p className="text-[11px] font-bold tracking-widest text-primary">DYNAMO VIETNAM MC</p>
+        <h1 className="mb-4 text-lg font-bold">
+          {mode === "login" ? "Đăng nhập MES" : "Tạo tài khoản"}
+        </h1>
+        <form onSubmit={submit} className="flex flex-col gap-2">
+          {mode === "signup" && (
+            <input
+              className="rounded border border-input px-2 py-1.5 text-xs"
+              placeholder="Họ tên"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+            />
+          )}
+          <input
+            className="rounded border border-input px-2 py-1.5 text-xs"
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            className="rounded border border-input px-2 py-1.5 text-xs"
+            type="password"
+            placeholder="Mật khẩu"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            minLength={6}
+            required
+          />
+          <button
+            disabled={busy}
+            className="rounded bg-primary px-3 py-2 text-xs font-bold text-primary-foreground disabled:opacity-60"
+          >
+            {mode === "login" ? "ĐĂNG NHẬP" : "ĐĂNG KÝ"}
+          </button>
+        </form>
+        <button
+          onClick={google}
+          className="mt-2 w-full rounded border border-input px-3 py-2 text-xs font-bold"
+        >
+          Đăng nhập bằng Google
+        </button>
+        {message && <p className="mt-3 text-[11px] text-destructive">{message}</p>}
+        <button
+          onClick={() => setMode(mode === "login" ? "signup" : "login")}
+          className="mt-3 text-[11px] text-primary underline"
+        >
+          {mode === "login" ? "Chưa có tài khoản? Đăng ký" : "Đã có tài khoản? Đăng nhập"}
+        </button>
+        <p className="mt-3 text-[10px] text-muted-foreground">
+          Tài khoản mới mặc định là OPERATOR. Quản trị viên nâng quyền LEADER/ADMIN trong cơ sở dữ liệu.
+        </p>
       </div>
     </div>
   );

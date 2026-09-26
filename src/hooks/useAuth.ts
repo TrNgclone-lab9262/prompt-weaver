@@ -1,41 +1,52 @@
 import { useEffect, useState } from "react";
-import { localDB, type Role, type UserProfile } from "@/lib/local-db";
+import type { Session } from "@supabase/supabase-js";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import type { Role } from "@/lib/mes";
 
 export function useSession() {
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => localDB.getCurrentUser());
-  const [loading, setLoading] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setCurrentUser(localDB.getCurrentUser());
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setLoading(false);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => setSession(s));
+    return () => sub.subscription.unsubscribe();
   }, []);
 
-  const session = currentUser
-    ? {
-        user: {
-          id: currentUser.id,
-          email: currentUser.email,
-          user_metadata: {
-            full_name: currentUser.full_name,
-            role: currentUser.role,
-          },
-        },
-      }
-    : null;
-
-  return { session, loading, currentUser };
+  return { session, loading };
 }
 
 export function useRole() {
-  const { session, loading, currentUser } = useSession();
+  const { session, loading } = useSession();
   const userId = session?.user.id;
-  const role: Role = currentUser?.role || "admin";
 
+  const { data, isLoading } = useQuery({
+    queryKey: ["role", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId!);
+      if (error) throw error;
+      const roles = (data ?? []).map((r) => r.role as Role);
+      if (roles.includes("admin")) return "admin" as Role;
+      if (roles.includes("leader")) return "leader" as Role;
+      return "operator" as Role;
+    },
+  });
+
+  const role = data ?? null;
   return {
     session,
     userId,
     role,
     isManager: role === "admin" || role === "leader",
     isAdmin: role === "admin",
-    loading,
+    loading: loading || isLoading,
   };
 }
