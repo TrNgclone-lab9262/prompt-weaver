@@ -76,6 +76,14 @@ function Dashboard() {
   if (isLoading || !data) return <p className="text-xs">Đang tải dữ liệu…</p>;
 
   const count = (s: string) => data.machines.filter((m) => m.status === s).length;
+  const countWorkshop = (w: string) => data.machines.filter((m) => (m.workshop ?? "OTHER") === w).length;
+  const PREFERRED = ["INSERT", "MOLD", "PIN"];
+  const found = Array.from(new Set(data.machines.map((m) => m.workshop ?? "OTHER")));
+  const workshops = [
+    "ALL",
+    ...PREFERRED.filter((w) => found.includes(w)),
+    ...found.filter((w) => !PREFERRED.includes(w)).sort(),
+  ];
   const planned = data.wos.reduce((a, w) => a + (w.quantity ?? 0), 0);
   const good = data.jobs.reduce((a, j) => a + (j.good_qty ?? 0), 0);
   const ng = data.jobs.reduce((a, j) => a + (j.ng_qty ?? 0), 0);
