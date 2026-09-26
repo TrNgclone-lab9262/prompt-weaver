@@ -41,10 +41,12 @@ export const Route = createFileRoute("/_authenticated/timeline")({
 type Zoom = 1 | 7 | 30;
 
 function TimelinePage() {
+  const search = Route.useSearch();
   const [zoom, setZoom] = useState<Zoom>(7);
   const [offset, setOffset] = useState(0);
-  const [statusFilter, setStatusFilter] = useState("ALL");
-  const [machineFilter, setMachineFilter] = useState("ALL");
+  const [statusFilter, setStatusFilter] = useState(search.status ?? "ALL");
+  const [machineFilter, setMachineFilter] = useState(search.machine ?? "ALL");
+
   const [selected, setSelected] = useState<TimelineBar | null>(null);
   const [trayOpen, setTrayOpen] = useState(false);
   const [traySearch, setTraySearch] = useState("");
