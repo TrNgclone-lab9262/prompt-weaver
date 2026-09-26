@@ -24,11 +24,13 @@ function Kpi({
   value,
   tone,
   to,
+  search,
 }: {
   label: string;
   value: string | number;
   tone?: string;
-  to?: "/machines" | "/shinko";
+  to?: "/timeline" | "/shinko";
+  search?: Record<string, string>;
 }) {
   const body = (
     <>
@@ -40,6 +42,7 @@ function Kpi({
     return (
       <Link
         to={to}
+        search={search ?? {}}
         className="mes-card flex-1 cursor-pointer p-2 text-center transition-colors hover:border-primary"
         title="Bấm để mở trang xử lý"
       >
@@ -49,6 +52,7 @@ function Kpi({
   }
   return <div className="mes-card flex-1 p-2 text-center">{body}</div>;
 }
+
 
 function Dashboard() {
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
