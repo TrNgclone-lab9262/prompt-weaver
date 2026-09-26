@@ -30,8 +30,13 @@ export const Route = createFileRoute("/_authenticated/timeline")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    status: typeof s["status"] === "string" ? s["status"] : undefined,
+    machine: typeof s["machine"] === "string" ? s["machine"] : undefined,
+  }),
   component: TimelinePage,
 });
+
 
 type Zoom = 1 | 7 | 30;
 
