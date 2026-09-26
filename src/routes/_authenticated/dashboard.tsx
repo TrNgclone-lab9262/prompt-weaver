@@ -90,11 +90,12 @@ function Dashboard() {
     <>
       <PageTitle title="DASHBOARD" sub="KPI sản xuất — tự làm mới mỗi 60 giây" />
       <div className="flex flex-wrap gap-2">
-        <Kpi label="RUNNING" value={count("RUN")} to="/machines" />
-        <Kpi label="WAITING" value={count("WAIT")} tone="text-muted-foreground" to="/machines" />
-        <Kpi label="SETUP" value={count("SETUP")} tone="text-setup" to="/machines" />
-        <Kpi label="BREAKDOWN" value={count("BREAKDOWN")} tone="text-destructive" to="/machines" />
+        <Kpi label="RUNNING" value={count("RUN")} to="/timeline" search={{ status: "RUN" }} />
+        <Kpi label="WAITING" value={count("WAIT")} tone="text-muted-foreground" to="/timeline" search={{ status: "WAIT" }} />
+        <Kpi label="SETUP" value={count("SETUP")} tone="text-setup" to="/timeline" search={{ status: "SETUP" }} />
+        <Kpi label="BREAKDOWN" value={count("BREAKDOWN")} tone="text-destructive" to="/timeline" search={{ status: "BREAKDOWN" }} />
         <Kpi label="DELAY JOBS" value={delayed} tone="text-destructive" to="/shinko" />
+
       </div>
       <div className="flex flex-wrap gap-2">
         <Kpi label="PLANNED QTY" value={planned} />
@@ -132,10 +133,12 @@ function Dashboard() {
               .map((m) => (
                 <Link
                   key={m.id}
-                  to="/machines"
+                  to="/timeline"
+                  search={{ machine: m.code }}
                   className="cursor-pointer rounded border border-border p-2 transition-colors hover:border-primary"
-                  title="Bấm để mở trang Trạng thái máy"
+                  title="Bấm để xem lịch máy của máy này"
                 >
+
                   <div className="text-[11px] font-bold">{m.code}</div>
                   <div className="truncate text-[10px] text-muted-foreground">{m.name}</div>
                   <span
