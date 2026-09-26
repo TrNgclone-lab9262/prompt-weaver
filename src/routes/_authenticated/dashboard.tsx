@@ -56,6 +56,7 @@ function Kpi({
 
 function Dashboard() {
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [workshopFilter, setWorkshopFilter] = useState<string>("ALL");
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard"],
     refetchInterval: 60_000,
