@@ -43,6 +43,10 @@
   --color-sat: var(--sat);
   --color-sun: var(--sun);
   --color-today: var(--today);
+  /* DYNAMO brand */
+  --color-dynamo: var(--dynamo);
+  --color-graphite: var(--graphite);
+  --color-titan: var(--titan);
 }
 
 :root {
