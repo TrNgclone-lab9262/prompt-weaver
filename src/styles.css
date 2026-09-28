@@ -84,6 +84,11 @@
   --sat: oklch(0.95 0.03 240);
   --sun: oklch(0.95 0.04 25);
   --today: oklch(0.97 0.05 150);
+
+  /* DYNAMO brand palette */
+  --dynamo: oklch(0.55 0.22 27); /* đỏ Dynamo #D32027 */
+  --graphite: oklch(0.22 0.02 250); /* đen carbon #0F172A */
+  --titan: oklch(0.87 0.01 250); /* bạc titan */
 }
 
 @layer base {
